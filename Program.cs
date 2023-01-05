@@ -26,8 +26,9 @@ MongoClient client = new MongoClient(
 IMongoDatabase db = client.GetDatabase(databaseName);
 
 
-app.MapPost("/api/v1/work-queue", (WorkQueueRequest request) => {
-    return (new WorkQueueService()).GetWorkQueueResponse(db, request);
+app.MapPost("/api/v1/work-queue", async (WorkQueueRequest request) => {
+    WorkQueueService workQueueService = new WorkQueueService();
+    return await workQueueService.GetWorkQueueResponse(db, request);
 });
 
 app.Run();
