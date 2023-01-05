@@ -1,9 +1,14 @@
 using MongoDB.Driver;
+using WorkQueueAPI.Converters;
 using WorkQueueAPI.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("secrets.json");
+builder.Services.AddControllers().AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+    });
 
 String connectionString = builder.Configuration["ConnectionString"];
 String databaseName = builder.Configuration["DatabaseName"];
@@ -16,15 +21,12 @@ var client = new MongoClient(
 
 var db = client.GetDatabase(databaseName);
 
-app.MapGet("/", () => "Hello World!");
 
-app.MapGet("/work-queue", () => {
-    return new WorkQueueResponse()
+app.MapPost("/api/v1/work-queue", (WorkQueueRequest request) => {
+    return request;
+/*    return new WorkQueueResponse()
     {
-        Id = 1,
-        ConnectionString = connectionString,
-        Database = databaseName
-    };
+    };*/
 });
 
 app.Run();
