@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using WorkQueueAPI.Converters;
 using WorkQueueAPI.Model;
 using WorkQueueAPI.Services;
+using static System.Formats.Asn1.AsnWriter;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Configuration
@@ -12,6 +13,7 @@ builder.Services.Configure<JsonOptions>(options =>
         options.SerializerOptions.Converters.Add(new DateOnlyJsonConverter());
         options.SerializerOptions.PropertyNamingPolicy = null;
     });
+builder.Services.AddScoped<WorkQueueService>();
 
 WebApplication app = builder.Build();
 
@@ -26,8 +28,7 @@ MongoClient client = new MongoClient(
 IMongoDatabase db = client.GetDatabase(databaseName);
 
 
-app.MapPost("/api/v1/work-queue", async (WorkQueueRequest request) => {
-    WorkQueueService workQueueService = new WorkQueueService();
+app.MapPost("/api/v1/work-queue", async (WorkQueueRequest request, WorkQueueService workQueueService) => {
     return await workQueueService.GetWorkQueueResponse(db, request);
 });
 
