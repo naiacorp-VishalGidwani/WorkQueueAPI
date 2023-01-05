@@ -14,22 +14,13 @@ builder.Services.Configure<JsonOptions>(options =>
         options.SerializerOptions.PropertyNamingPolicy = null;
     });
 builder.Services.AddScoped<WorkQueueService>();
+builder.Services.AddScoped<MongoDBService>();
 
 WebApplication app = builder.Build();
 
 
-String connectionString = builder.Configuration["ConnectionString"];
-String databaseName = builder.Configuration["DatabaseName"];
-
-MongoClient client = new MongoClient(
-    connectionString
-);
-
-IMongoDatabase db = client.GetDatabase(databaseName);
-
-
 app.MapPost("/api/v1/work-queue", async (WorkQueueRequest request, WorkQueueService workQueueService) => {
-    return await workQueueService.GetWorkQueueResponse(db, request);
+    return await workQueueService.GetWorkQueueResponse(request);
 });
 
 app.Run();

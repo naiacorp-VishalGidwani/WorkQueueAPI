@@ -7,9 +7,16 @@ namespace WorkQueueAPI.Services
 {
     public class WorkQueueService
     {
-        public async Task<WorkQueueResponse> GetWorkQueueResponse(IMongoDatabase db, WorkQueueRequest request) {
-            List<Dictionary<string, string>> data = new List<Dictionary<string, string>>();
+        private MongoDBService _mongoDBService;
+        public WorkQueueService(MongoDBService mongoDBService)
+        {
+            _mongoDBService = mongoDBService;
+        }
 
+        public async Task<WorkQueueResponse> GetWorkQueueResponse(WorkQueueRequest request) {
+            List<Dictionary<string, string>> data = new List<Dictionary<string, string>>();
+            
+            IMongoDatabase db = _mongoDBService.GetDB();
             IMongoCollection<BsonDocument> collection = db.GetCollection<BsonDocument>("CurrentBillings");
 
             BsonDocument filter = new BsonDocument();
