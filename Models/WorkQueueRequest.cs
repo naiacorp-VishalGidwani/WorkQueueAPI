@@ -2,7 +2,8 @@
 {
     public class WorkQueueRequest
     {
-        public DateTime ExpiryEndDate { get; set; }
+        public DateOnly FilingExpiryStartDate { get; set; }
+        public DateOnly FilingExpiryEndDate { get; set; }
         public HashSet<String>? Fields { get; set; }
     }
 }
