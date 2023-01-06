@@ -1,6 +1,8 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Globalization;
+using System.Net;
+using System.Web.Http;
 using WorkQueueAPI.Constants;
 using WorkQueueAPI.Model;
 
@@ -39,9 +41,16 @@ namespace WorkQueueAPI.Services
 
             foreach (String field in request.Fields)
             {
+                // fixme: excpetion is not being translated as proper http response. Need to take a look why
                 if (!WorkQueue.TIMELY_FILING_KEY_MAP.ContainsKey(field))
                 {
-                    throw new InvalidOperationException("Field '" + field + "' is not supported.");
+                    var resp = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent(string.Format("Field '{0}' is not supported.", field)),
+                        ReasonPhrase = "Invalid Field"
+                    };
+
+                    throw new HttpResponseException(resp);
                 }
 
                 projection.Add(WorkQueue.TIMELY_FILING_KEY_MAP.GetValueOrDefault(field), 1.0);
